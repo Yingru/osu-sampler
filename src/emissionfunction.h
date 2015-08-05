@@ -79,7 +79,6 @@ public:
   void calculate_dN_dxtdetady_and_sample_4all();
   void shell(); // it all starts here...
   void combine_samples_to_OSCAR();
-  string OSCAR_header_filename, OSCAR_output_filename;
 
   // Sample files
   string samples_filename, samples_control_filename, samples_format_filename; // where samples, its control informations, and its "format file" are stored; the first two can contain a "%d" string to generate multiple files

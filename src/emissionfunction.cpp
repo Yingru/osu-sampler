@@ -183,9 +183,6 @@ EmissionFunctionArray::EmissionFunctionArray(Table* chosen_particles_in, Table* 
   dN_dxt_filename = "results/dN_dxt_%d.dat";
   dN_dx_filename = "results/dN_dx_%d.dat";
 
-  OSCAR_header_filename = "OSCAR_header.txt";
-  OSCAR_output_filename = "OSCAR.DAT";
-
   dN_dxtdy_4all = new double*[FO_length];
   for (long l=0; l<FO_length; l++) dN_dxtdy_4all[l] = new double[number_of_chosen_particles];
   sorted_FZ = new long[FO_length];
@@ -2557,23 +2554,13 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
     char line_buffer[500];
 
     // open file for output
-    remove(OSCAR_output_filename.c_str());
-    ofstream oscar(OSCAR_output_filename.c_str());
+    ofstream oscar("oscar.dat");
 
-    // write header first
-    ifstream header(OSCAR_header_filename.c_str());
-    if (!header.is_open())
-    {
-        cout << endl << "combine_samples_to_OSCAR error: OSCAR header file " << OSCAR_header_filename.c_str() << " not found." << endl;
-        exit(-1);
-    }
-    while (true)
-    {
-        header.getline(line_buffer, 500);
-        if (!header.eof()) oscar << line_buffer << endl;
-        else break;
-    }
-    header.close();
+    // write header
+    oscar <<
+      "OSC1997A\n"
+      "final_id_p_x\n"
+      "   hydro       1.0  (197,    79)+(197,    79)  eqsp  0.1000E+03         1\n";
 
     // open control and sample files
     vector<ifstream*> controls(number_of_chosen_particles); // control files
