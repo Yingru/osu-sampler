@@ -990,7 +990,7 @@ void EmissionFunctionArray::sample_using_dN_dxtdetady_smooth_pT_phi()
     double pT_to = paraRdr->getVal("sample_pT_up_to");
     if (pT_to<0) pT_to = pT_tab->getLast(1); // use table to determine pT range
     double zero = paraRdr->getVal("minimum_emission_function_val"); // If dN/(dx_t deta dy) is evaluated to be smaller than this value, then it is replaced by this value.
-    long number_of_repeated_sampling = paraRdr->getVal("number_of_repeated_sampling");
+    long number_of_repeated_sampling = paraRdr->getVal("oversamples");
 
     particle_info* particle = &particles[last_particle_idx];
 
@@ -1333,7 +1333,7 @@ void EmissionFunctionArray::sample_using_dN_dxtdetady_smooth_pT_phi()
 //     double pT_to = paraRdr->getVal("sample_pT_up_to");
 //     if (pT_to<0) pT_to = pT_tab->getLast(1); // use table to determine pT range
 //     double zero = paraRdr->getVal("minimum_emission_function_val"); // If dN/(dx_t deta dy) is evaluated to be smaller than this value, then it is replaced by this value.
-//     long number_of_repeated_sampling = paraRdr->getVal("number_of_repeated_sampling");
+//     long number_of_repeated_sampling = paraRdr->getVal("oversamples");
 //
 //     particle_info* particle = &particles[last_particle_idx];
 //
@@ -1626,7 +1626,7 @@ void EmissionFunctionArray::sample_using_dN_pTdpTdphidy()
     double pT_to = paraRdr->getVal("sample_pT_up_to");
     if (pT_to<0) pT_to = pT_tab->getLast(1); // use table to determine pT range
     double zero = paraRdr->getVal("minimum_emission_function_val"); // If dN/(dx_t deta dy) is evaluated to be smaller than this value, then it is replaced by this value.
-    long number_of_repeated_sampling = paraRdr->getVal("number_of_repeated_sampling");
+    long number_of_repeated_sampling = paraRdr->getVal("oversamples");
 
     particle_info* particle = &particles[last_particle_idx];
 
@@ -2510,7 +2510,7 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
 
     // big loop for generating OSCAR
     if (AMOUNT_OF_OUTPUT>0) print_progressbar(-1);
-    long number_of_repeated_sampling = paraRdr->getVal("number_of_repeated_sampling");
+    long number_of_repeated_sampling = paraRdr->getVal("oversamples");
     for (long sample_idx=1; sample_idx<=number_of_repeated_sampling; sample_idx++)
     {
         // read-in number of particles for each species
@@ -2767,7 +2767,7 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
     double sampling_para4 = paraRdr->getVal("dN_dy_sampling_para4");
     double sampling_para5 = paraRdr->getVal("dN_dy_sampling_para5");
 
-    long number_of_repeated_sampling = paraRdr->getVal("number_of_repeated_sampling");
+    long number_of_repeated_sampling = paraRdr->getVal("oversamples");
     double pT_to = paraRdr->getVal("sample_pT_up_to");
     if (pT_to<0) pT_to = pT_tab->getLast(1); // use table to determine pT range
     double y_minus_eta_s_range = paraRdr->getVal("sample_y_minus_eta_s_range");
