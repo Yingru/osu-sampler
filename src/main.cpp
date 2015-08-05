@@ -78,4 +78,8 @@ int main(int argc, char** argv)
 
    efa.shell();
    //efa.combine_samples_to_OSCAR();
+
+   delete paraRdr;
+   delete[] FOsurf_ptr;
+   delete[] particle;
 }

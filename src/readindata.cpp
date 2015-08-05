@@ -645,6 +645,8 @@ void read_FOdata::calculate_particle_mu(int Nparticle, FO_surf* FOsurf_ptr, int 
             break;
          }
 
+   delete[] stable_particle_monval;
+
    // calculating chemical potentials for unstable resonances
    print_progressbar(-1);
    for(int i=0; i < Nparticle ; i++)

@@ -256,6 +256,8 @@ EmissionFunctionArray::~EmissionFunctionArray()
 
   for (int j=0; j<phi_tab4Sampling_length; j++) delete[] trig_phi_tab4Sampling[j];
   delete[] trig_phi_tab4Sampling;
+
+  delete bulkdf_coeff;
 }
 //***************************************************************************
 
@@ -2483,25 +2485,24 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
       "   hydro       1.0  (197,    79)+(197,    79)  eqsp  0.1000E+03         1\n";
 
     // open control and sample files
-    vector<ifstream*> controls(number_of_chosen_particles); // control files
-    vector<ifstream*> samples(number_of_chosen_particles); // sample files
+    ifstream* controls = new ifstream[number_of_chosen_particles];
+    ifstream* samples = new ifstream[number_of_chosen_particles];
+
     for (int m=0; m<number_of_chosen_particles; m++)
     {
         char filename_buffer[300];
         int monval = particles[chosen_particles_sampling_table[m]].monval;
         // control files first
         sprintf(filename_buffer, samples_control_filename.c_str(), monval);
-        controls[m] = new ifstream ;
-        controls[m]->open(filename_buffer);
-        if (!controls[m]->is_open())
+        controls[m].open(filename_buffer);
+        if (!controls[m].is_open())
         {
             cout << endl << "combine_samples_to_OSCAR error: control file " << filename_buffer << " not found." << endl;
             exit(-1);
         }
         sprintf(filename_buffer, samples_filename.c_str(), monval);
-        samples[m] = new ifstream ;
-        samples[m]->open(filename_buffer);
-        if (!samples[m]->is_open())
+        samples[m].open(filename_buffer);
+        if (!samples[m].is_open())
         {
             cout << endl << "combine_samples_to_OSCAR error: sample file " << filename_buffer << " not found." << endl;
             exit(-1);
@@ -2518,7 +2519,7 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
         long total_number_of_particles = 0;
         for (int m=0; m<number_of_chosen_particles; m++)
         {
-            (*controls[m]) >> number_of_particles[m];
+            controls[m] >> number_of_particles[m];
             total_number_of_particles += number_of_particles[m];
         }
         // sub-header for each event
@@ -2532,13 +2533,16 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
             for (long ii=1; ii<=number_of_particles[m]; ii++)
             {
                 oscar << setw(10) << ipart << "  " << setw(10) << monval << "  ";
-                samples[m]->getline(line_buffer, 500);
+                samples[m].getline(line_buffer, 500);
                 oscar << line_buffer << endl;
                 ipart ++;
             }
         }
         if (AMOUNT_OF_OUTPUT>0) print_progressbar((double)sample_idx/number_of_repeated_sampling);
     }
+
+    delete[] samples;
+    delete[] controls;
 }
 
 
