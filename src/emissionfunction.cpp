@@ -13,7 +13,7 @@
 #include<stdlib.h>
 #include<string.h>
 
-#include<gsl/gsl_sf_bessel.h>
+#include <boost/math/special_functions/bessel.hpp>
 
 #include "main.h"
 #include "readindata.h"
@@ -2797,8 +2797,8 @@ double EmissionFunctionArray::calculate_dN_analytic(particle_info* particle, dou
    double lambda = exp(beta*mu);
    for(int i=0; i < truncate_order; i++)
    {
-      double arg = (i+1)*mass*beta;
-      results += pow((-1.0)*sign, i)/(i+1)*pow(lambda, i+1)*gsl_sf_bessel_Kn(2, arg);
+      results += pow((-1.0)*sign, i)/(i+1)*pow(lambda, i+1) *
+                 boost::math::cyl_bessel_k(2, (i+1)*mass*beta);
    }
    results = results*prefactor;
    return(results);
