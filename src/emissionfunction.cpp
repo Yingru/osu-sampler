@@ -221,7 +221,7 @@ EmissionFunctionArray::EmissionFunctionArray(Table* chosen_particles_in, Table* 
   }
 
   //arrays for bulk delta f coefficients
-  bulkdf_coeff = new Table ("EOS/BulkDf_Coefficients_Hadrons_s95p-v0-PCE.dat");
+  bulkdf_coeff = new Table ("tables/BulkDf_Coefficients_Hadrons_s95p-v0-PCE.dat");
 
 }
 //***************************************************************************
@@ -2170,7 +2170,7 @@ inline long EmissionFunctionArray::determine_number_to_sample(double dN_dy_in, i
     double p,k; // parameters in NBD
 
     // determine actual number of particles
-    switch (model) // explained in parameters.dat
+    switch (model) // explained in configuration file
     {
         case 1: // with possibly 1 more particle
             number_to_sample = dN_dy_int;

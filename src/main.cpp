@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
    // read in parameters
    ParameterReader *paraRdr = new ParameterReader;
-   paraRdr->readFromFile("parameters.dat");
+   paraRdr->readFromFile("sampler.conf");
    paraRdr->readFromArguments(argc, argv);
    paraRdr->echo();
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
    if (randomSeed<0) randomSeed=a.tv_usec; // randomSeed<0 means to use CPU clock
    srand48(randomSeed);
 
-   Table chosen_particles("EOS/chosen_particles.dat"); // skip others except for these particle
+   Table chosen_particles("tables/chosen_particles.dat"); // skip others except for these particle
    Table pT_tab("tables/pT_gauss_table.dat"); // pt position and weight table
    Table phi_tab("tables/phi_gauss_table.dat"); // phi position and weight table
    //Table eta_tab("tables/eta_gauss_table_30_full.dat"); // eta uniform dist table

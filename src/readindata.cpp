@@ -542,7 +542,7 @@ int read_FOdata::read_resonances_list(particle_info* particle)
    double eps = 1e-15;
    int Nparticle=0;
    cout << " -- Read in particle resonance decay table...";
-   ifstream resofile("EOS/pdg.dat");
+   ifstream resofile("tables/pdg_particles.dat");
    int local_i = 0;
    int dummy_int;
    while (!resofile.eof())
