@@ -58,8 +58,6 @@ class read_FOdata
         int get_number_of_freezeout_cells();
         void read_in_freeze_out_data(int length, FO_surf* surf_ptr);
         int read_in_chemical_potentials(string path, int FO_length, FO_surf* surf_ptr, particle_info* particle_ptr);
-        void read_decdat(int length, FO_surf* surf_ptr);
-        void read_surfdat(int length, FO_surf* surf_ptr);
         void read_FOsurfdat_VISH2p1(int length, FO_surf* surf_ptr);
         void read_FOsurfdat_MUSIC(int length, FO_surf* surf_ptr);
         void read_FOsurfdat_MUSIC_boost_invariant(int length, FO_surf* surf_ptr);

@@ -34,9 +34,7 @@ int read_FOdata::get_number_of_freezeout_cells()
    int number_of_cells = 0;
    if (mode == 0)  // outputs from VISH2+1
    {
-      ostringstream decdatfile;
-      decdatfile << path << "/decdat2.dat";
-      Table block_file(decdatfile.str().c_str());
+      Table block_file("surface.dat");
       number_of_cells = block_file.getNumberOfRows();
    }
    else if (mode == 1)  // outputs from MUSIC boost-invariant
@@ -167,87 +165,44 @@ int read_FOdata::read_in_chemical_potentials(string /* path */, int FO_length, F
    return(Nparticle);
 }
 
-void read_FOdata::read_decdat(int length, FO_surf* surf_ptr)
-{
-  double temp, temp_vx, temp_vy;
-  cout<<" -- Read in information on freeze out surface...";
-  ostringstream decdat_stream;
-  decdat_stream << path << "/decdat2.dat";
-  ifstream decdat(decdat_stream.str().c_str());
-  for(int i=0; i<length; i++)
-  {
-     decdat >> surf_ptr[i].tau;
-     surf_ptr[i].eta = 0.0;
-
-     decdat >> surf_ptr[i].da0;
-     decdat >> surf_ptr[i].da1;
-     decdat >> surf_ptr[i].da2;
-     surf_ptr[i].da3 = 0.0;
-
-     decdat >> temp_vx;
-     decdat >> temp_vy;
-     surf_ptr[i].u0 = 1./sqrt(1. - temp_vx*temp_vx - temp_vy*temp_vy);
-     surf_ptr[i].u1 = surf_ptr[i].u0*temp_vx;
-     surf_ptr[i].u2 = surf_ptr[i].u0*temp_vy;
-     surf_ptr[i].u3 = 0.0;
-
-     decdat >> surf_ptr[i].Edec;
-     decdat >> surf_ptr[i].Bn;
-     decdat >> surf_ptr[i].Tdec;
-     decdat >> surf_ptr[i].muB;
-     decdat >> surf_ptr[i].muS;
-     decdat >> surf_ptr[i].Pdec;
-
-     decdat >> surf_ptr[i].pi33;
-     decdat >> surf_ptr[i].pi00;
-     decdat >> surf_ptr[i].pi01;
-     decdat >> surf_ptr[i].pi02;
-     surf_ptr[i].pi03 = 0.0;
-     decdat >> surf_ptr[i].pi11;
-     decdat >> surf_ptr[i].pi12;
-     surf_ptr[i].pi13 = 0.0;
-     decdat >> surf_ptr[i].pi22;
-     surf_ptr[i].pi23 = 0.0;
-
-     decdat >> temp;
-     if(turn_on_bulk == 1)
-         surf_ptr[i].bulkPi = temp;
-     else
-         surf_ptr[i].bulkPi = 0.0;
-  }
-  decdat.close();
-  cout<<"done"<<endl;
-  return;
-}
-
-void read_FOdata::read_surfdat(int length, FO_surf* surf_ptr)
-{
-  cout<<" -- Read spatial positions of freeze out surface...";
-  ostringstream surfdat_stream;
-  double dummy;
-  char rest_dummy[512];
-  surfdat_stream << path << "/surface.dat";
-  ifstream surfdat(surfdat_stream.str().c_str());
-  for(int i=0; i<length; i++)
-  {
-     surfdat >> dummy >> dummy;
-     surfdat >> surf_ptr[i].xpt;
-     surfdat >> surf_ptr[i].ypt;
-     surfdat.getline(rest_dummy, 512);
-  }
-  surfdat.close();
-  cout<<"done"<<endl;
-  return;
-}
-
 void read_FOdata::read_FOsurfdat_VISH2p1(int length, FO_surf* surf_ptr)
 {
-  cout << " -- Loading the decoupling data from VISH2+1 ...." << endl;
-  //read the data arrays for the decoupling information
-  read_decdat(length, surf_ptr);
-  //read the positions of the freeze out surface
-  read_surfdat(length, surf_ptr);
-  return;
+  ifstream ifs("surface.dat");
+  std::string line;
+  double vx, vy, gamma;
+
+  for(int i = 0; i < length; ++i)
+  {
+    std::getline(ifs, line);
+    std::istringstream iss(line);
+
+    iss >> surf_ptr[i].tau
+        >> surf_ptr[i].xpt >> surf_ptr[i].ypt
+        >> surf_ptr[i].da0 >> surf_ptr[i].da1 >> surf_ptr[i].da2
+        >> vx >> vy
+        >> surf_ptr[i].Edec >> surf_ptr[i].Pdec >> surf_ptr[i].Tdec
+        >> surf_ptr[i].pi00 >> surf_ptr[i].pi01 >> surf_ptr[i].pi02
+        >> surf_ptr[i].pi11 >> surf_ptr[i].pi12 >> surf_ptr[i].pi22
+        >> surf_ptr[i].pi33
+        >> surf_ptr[i].bulkPi;
+
+    gamma = 1./std::sqrt(1. - vx*vx - vy*vy);
+    surf_ptr[i].u0 = gamma;
+    surf_ptr[i].u1 = gamma*vx;
+    surf_ptr[i].u2 = gamma*vy;
+    surf_ptr[i].u3 = 0.;
+
+    surf_ptr[i].eta = 0.;
+    surf_ptr[i].da3 = 0.;
+
+    surf_ptr[i].Bn = 0.;
+    surf_ptr[i].muB = 0.;
+    surf_ptr[i].muS = 0.;
+
+    surf_ptr[i].pi03 = 0.0;
+    surf_ptr[i].pi13 = 0.0;
+    surf_ptr[i].pi23 = 0.0;
+  }
 }
 
 void read_FOdata::read_FOsurfdat_MUSIC_boost_invariant(int length, FO_surf* surf_ptr)
