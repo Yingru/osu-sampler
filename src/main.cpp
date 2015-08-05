@@ -34,19 +34,10 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-   cout << endl
-        << "                  iSpectraSampler                " << endl
-        << endl
-        << "  Ver 2.0.0.0  ---- Zhi Qiu & Chun Shen, 04/2012 " << endl;
-   cout << endl << "**********************************************************" << endl;
-   display_logo(3); // Hail to the king~
-   cout << endl << "**********************************************************" << endl << endl;
-
    // read in parameters
    ParameterReader *paraRdr = new ParameterReader;
    paraRdr->readFromFile("sampler.conf");
    paraRdr->readFromArguments(argc, argv);
-   paraRdr->echo();
 
    // Chun's input reading process
    string path="results";
@@ -56,7 +47,6 @@ int main(int argc, char** argv)
 
    int FO_length = 0;
    FO_length = freeze_out_data.get_number_of_freezeout_cells();
-   cout <<"total number of cells: " <<  FO_length << endl;
 
    FO_surf* FOsurf_ptr = new FO_surf[FO_length];
    for(int i=0; i<FO_length; i++)
@@ -68,8 +58,6 @@ int main(int argc, char** argv)
    //read the chemical potential on the freeze out surface
    particle_info *particle = new particle_info [Maxparticle];
    int Nparticle = freeze_out_data.read_in_chemical_potentials(path, FO_length, FOsurf_ptr, particle);
-
-   cout << endl << " -- Read in data finished!" << endl << endl;
 
    // Next, Zhi's turn...
    // init random seed from system time
@@ -85,6 +73,8 @@ int main(int argc, char** argv)
    //Table eta_tab("tables/eta_gauss_table_30_full.dat"); // eta uniform dist table
    Table eta_tab("tables/eta_uni_table.dat"); // eta uniform dist table
    EmissionFunctionArray efa(&chosen_particles, &pT_tab, &phi_tab, &eta_tab, particle, Nparticle, FOsurf_ptr, FO_length, paraRdr);
+
+   std::cout << std::fixed;
 
    efa.shell();
    //efa.combine_samples_to_OSCAR();

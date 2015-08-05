@@ -25,7 +25,6 @@
 #include "Poisson.h"
 #include "ParameterReader.h"
 #include "arsenal.h"
-#include "Stopwatch.h"
 
 #define AMOUNT_OF_OUTPUT 0 // smaller value means less outputs
 #define NUMBER_OF_LINES_TO_WRITE   100000 // string buffer for sample files
@@ -273,8 +272,6 @@ void EmissionFunctionArray::calculate_dN_dxtdetady(int particle_idx)
 // needed to calcualte flows.
 {
   last_particle_idx = particle_idx;
-  Stopwatch sw;
-  sw.tic();
 
   int use_pos_dN_only = paraRdr->getVal("use_pos_dN_only");
 
@@ -455,9 +452,6 @@ void EmissionFunctionArray::calculate_dN_dxtdetady(int particle_idx)
   //cout << endl << "------------------------------------- " << endl;
 
   delete [] bulkvisCoefficients;
-
-  sw.toc();
-  cout << endl << " -- Calculate_dN_dxtdetady finished in " << sw.takeTime() << " seconds." << endl;
 }
 //***************************************************************************
 
@@ -474,8 +468,6 @@ void EmissionFunctionArray::calculate_dN_pTdpTdphidy(int particle_idx)
 // array which is needed for sampling.
 {
   last_particle_idx = particle_idx;
-  Stopwatch sw;
-  sw.tic();
 
   int use_pos_dN_only = paraRdr->getVal("use_pos_dN_only");
 
@@ -647,9 +639,6 @@ void EmissionFunctionArray::calculate_dN_pTdpTdphidy(int particle_idx)
   //cout << "done." << endl;
 
   delete [] bulkvisCoefficients;
-
-  sw.toc();
-  cout << endl << " -- Calculate_dN_pTdpTdphidy finished in " << sw.takeTime() << " seconds." << endl;
 }
 //***************************************************************************
 
@@ -694,16 +683,7 @@ void EmissionFunctionArray::write_dN_dxtdetady_toFile()
 void EmissionFunctionArray::calculate_flows(int to_order, string flow_differential_filename_in, string flow_integrated_filename_in)
 // Calculate flow from order from_order to to_order and store them to files.
 {
-  /*
-  cout << endl
-       <<"*************************************************"
-       << endl
-       << "Function calculate_flows started... " << endl;*/
-  Stopwatch sw;
-  sw.tic();
-
   int from_order = 1;
-
   int number_of_flows = to_order-from_order+1;
 
   Table vn_diff(3+number_of_flows*3, pT_tab_length); // line format: pT, mT, dN/(pT dpT), flow_1_real, flow_1_imag, flow_1_norm, ...
@@ -820,11 +800,6 @@ void EmissionFunctionArray::calculate_flows(int to_order, string flow_differenti
   ofstream of2(flow_integrated_filename_in.c_str(), ios_base::app);
   vn_inte.printTable(of2);
   of2.close();
-  //cout << "done." << endl;
-
-  sw.toc();
-  //cout << "calculate_flows finishes " << sw.takeTime() << " seconds." << endl;
-
 }
 //***************************************************************************
 
@@ -840,14 +815,6 @@ void EmissionFunctionArray::calculate_dN_pTdpTdphidy_and_flows_4all_old_output(i
 // as the Azspectra7 did.
 // If perform_sampling is 1 then sample_using_dN_pTdpTdphidy will be called.
 {
-
-    cout << endl
-        << "*****************************************************************"
-        << endl
-        << "Function calculate_dN_pTdpTdphidy_and_flows_4all(old) started... " << endl;
-    Stopwatch sw;
-    sw.tic();
-
     remove(dN_pTdpTdphidy_filename.c_str());
     remove(flow_differential_filename_old.c_str());
     remove(flow_integrated_filename_old.c_str());
@@ -913,10 +880,6 @@ void EmissionFunctionArray::calculate_dN_pTdpTdphidy_and_flows_4all_old_output(i
 
 
     } // n: particle loop
-
-    sw.toc();
-    cout << " -- Calculate_dN_pTdpTdphidy_and_flows_4all finishes " << sw.takeTime() << " seconds." << endl;
-
 }
 //***************************************************************************
 
@@ -931,14 +894,6 @@ void EmissionFunctionArray::calculate_dN_pTdpTdphidy_and_flows_4all(int perform_
 // This version output dN / (ptdpt dphi dy) matrices in one file, but flows in separated
 // ones.
 {
-
-    cout << endl
-        << "****************************************************************"
-        << endl
-        << "Function calculate_dN_pTdpTdphidy_and_flows_4all started... " << endl;
-    Stopwatch sw;
-    sw.tic();
-
     // read in parameters
     int calculate_dN_dphi = paraRdr->getVal("calculate_dN_dphi");
     int to_order = paraRdr->getVal("calculate_vn_to_order");
@@ -1002,10 +957,6 @@ void EmissionFunctionArray::calculate_dN_pTdpTdphidy_and_flows_4all(int perform_
         }
     }
     of.close();
-
-    sw.toc();
-    cout << " -- Calculate_dN_pTdpTdphidy_and_flows_4all finishes " << sw.takeTime() << " seconds." << endl;
-
 }
 //***************************************************************************
 
@@ -1036,9 +987,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdetady_smooth_pT_phi()
 //    1): The fractional part of dN_dy is used as a probability to determine
 //       whether we have 0 or 1 more particle.
 {
-    Stopwatch sw;
-    sw.tic();
-
     double pT_to = paraRdr->getVal("sample_pT_up_to");
     if (pT_to<0) pT_to = pT_tab->getLast(1); // use table to determine pT range
     double zero = paraRdr->getVal("minimum_emission_function_val"); // If dN/(dx_t deta dy) is evaluated to be smaller than this value, then it is replaced by this value.
@@ -1348,10 +1296,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdetady_smooth_pT_phi()
     of_sample_format.close();
 
     delete [] bulkvisCoefficients;
-
-    sw.toc();
-    cout << endl << "Sampling finished in " << sw.takeTime() << " seconds." << endl;
-
 }
 //***************************************************************************
 
@@ -1679,9 +1623,6 @@ void EmissionFunctionArray::sample_using_dN_pTdpTdphidy()
 //    1): The fractional part of dN_dy is used as a probability to determine
 //       whether we have 0 or 1 more particle.
 {
-    Stopwatch sw;
-    sw.tic();
-
     double pT_to = paraRdr->getVal("sample_pT_up_to");
     if (pT_to<0) pT_to = pT_tab->getLast(1); // use table to determine pT range
     double zero = paraRdr->getVal("minimum_emission_function_val"); // If dN/(dx_t deta dy) is evaluated to be smaller than this value, then it is replaced by this value.
@@ -2135,10 +2076,6 @@ void EmissionFunctionArray::sample_using_dN_pTdpTdphidy()
     delete[] dN_pTdpTdphidy_max_4Sampling;
 
     delete [] bulkvisCoefficients;
-
-    sw.toc();
-    cout << endl << "Sampling finished in " << sw.takeTime() << " seconds." << endl;
-
 }
 //***************************************************************************
 
@@ -2207,14 +2144,6 @@ inline long EmissionFunctionArray::determine_number_to_sample(double dN_dy_in, i
 void EmissionFunctionArray::calculate_dN_dxtdetady_and_sample_4all()
 // Calculate dN_dxtdetady then sample.
 {
-
-    cout << endl
-        << "***********************************************************"
-        << endl
-        << "Function calculate_dN_dxtdetady_and_sample_4all started... " << endl;
-    Stopwatch sw;
-    sw.tic();
-
     // read in parameters
     int calculate_dN_dtau = paraRdr->getVal("calculate_dN_dtau");
     int calculate_dN_deta = paraRdr->getVal("calculate_dN_deta");
@@ -2266,14 +2195,9 @@ void EmissionFunctionArray::calculate_dN_dxtdetady_and_sample_4all()
             calculate_dN_dxt_using_dN_dxtdetady();
         }
 
-        cout << " -- Sampling using dN_dxtdetady: ";
         sample_using_dN_dxtdetady_smooth_pT_phi();
 
     }
-
-    sw.toc();
-    cout << " -- calculate_dN_dxtdetady_and_sample_4all finishes " << sw.takeTime() << " seconds." << endl;
-
 }
 //***************************************************************************
 
@@ -2547,10 +2471,6 @@ void EmissionFunctionArray::shell()
 //***************************************************************************
 void EmissionFunctionArray::combine_samples_to_OSCAR()
 {
-    Stopwatch sw;
-    sw.tic();
-    cout << " -- Now combine sample files to OSCAR file..." << endl;
-
     char line_buffer[500];
 
     // open file for output
@@ -2619,12 +2539,6 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
         }
         if (AMOUNT_OF_OUTPUT>0) print_progressbar((double)sample_idx/number_of_repeated_sampling);
     }
-
-    sw.toc();
-    cout << endl
-         << " -- combine_samples_to_OSCAR samples finishes " << sw.takeTime() << " seconds."
-         << endl;
-
 }
 
 
@@ -2654,9 +2568,6 @@ void EmissionFunctionArray::calculate_dN_dxtdy_4all_particles()
  unitless.
 */
 {
-    Stopwatch sw;
-    sw.tic();
-
     // sort freeze-out temperature for furture use
     for (long l=0; l<FO_length; l++) sorted_FZ[l] = l; // natural order
     // now bubble sort temperature; smaller temperature goes first
@@ -2762,10 +2673,6 @@ void EmissionFunctionArray::calculate_dN_dxtdy_4all_particles()
         to_write.printTable(of);
         of.close();
     }
-
-    sw.toc();
-    cout << endl << " -- Calculate_dN_dxtdy_4all_particles finished in " << sw.takeTime() << " seconds." << endl;
-
 }
 
 
@@ -2799,10 +2706,6 @@ double EmissionFunctionArray::calculate_total_FZ_energy_flux()
  Return the total energy flux on the freeze-out surface at eta_s=0.
 */
 {
-    Stopwatch sw;
-    sw.tic();
-    cout << " Function calculate_total_FZ_energy_flux started..." << endl;
-
     FO_surf *surf;
     double total_energy = 0;
     for (long l=0; l<FO_length; l++)
@@ -2840,10 +2743,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
  Different model can be used in the sampling.
 */
 {
-    Stopwatch sw_total;
-    sw_total.tic();
-    cout << " Function sample_using_dN_dxtdy_4all_particles started..." << endl;
-
     // reusable local variables
     FO_surf *surf; particle_info* particle;
     double prefactor = 1.0/(8.0*(M_PI*M_PI*M_PI))/hbarC/hbarC/hbarC;
@@ -2878,7 +2777,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
         // use "conventional" sampling
         // reusable variables
         vector<double> dN_dxtdy_single_particle(FO_length, 0); // dN_dxtdy for 1 particle
-        cout << endl << "Sampling using dN/dy with sample_using_dN_dxtdy_4all_particles function." << endl << endl;
         for (long n=0; n<number_of_chosen_particles; n++)
         {
             long real_particle_idx = chosen_particles_sampling_table[n];
@@ -2886,7 +2784,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
             double mass = particle->mass;
             int sign = particle->sign;
             int degen = particle->gspin;
-            cout << "Index: " << n << ", Name: " << particle->name << ", Monte-carlo index: " << particle->monval << endl;
 
             // prepare for outputs
             // the control file records how many particles are there in each sampling
@@ -2916,13 +2813,14 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
 
             // first get total number of particles
             double dN_dy = rand1D.return_sum();
-
-            cout << " -- Sampling using dN_dy=" << dN_dy << ", ";
             double dN = (y_RB-y_LB)*dN_dy;
-            cout << "dN=" << dN << "..." << endl;
 
-            Stopwatch sw;
-            sw.tic();
+            std::cout << std::setw(3)  << n                << ' '
+                      << std::setw(7)  << particle->monval << ' ' << std::left
+                      << std::setw(18) << particle->name   << ' ' << std::right
+                      << std::setw(10) << particle->mass   << ' '
+                      << std::setw(10) << dN_dy            << ' '
+                      << std::setw(10) << dN               << '\n';
 
             // The following variables are for "dynamic maximum" treatment
             // The maximum used in pdf sampling is "maximum_guess", this value is guaranteed (proven) to be larger than the emission function but may over estimate the actual maximum (hard to find analytically).
@@ -3214,10 +3112,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
                 cout << endl << " -- -- Number of tries: " << number_of_tries << ", number of success: " << number_of_success << endl
                      << " -- -- Success rate: " << (double) number_of_success/number_of_tries << ", " << "maximum accept rate: " << maximum_ratio << endl;
             }
-
-            sw.toc();
-            cout << endl << "Sampling finished in " << sw.takeTime() << " seconds." << endl;
-
         } // n; particle loop
 
         ofstream of_sample_format(samples_format_filename.c_str());
@@ -3270,9 +3164,6 @@ void EmissionFunctionArray::sample_using_dN_dxtdy_4all_particles_conventional()
     }
 
     delete [] bulkvisCoefficients;
-
-    sw_total.toc();
-    cout << endl << "sample_using_dN_dxtdy_4all_particles finished in " << sw_total.takeTime() << " seconds." << endl;
 }
 
 void EmissionFunctionArray::getbulkvisCoefficients(double Tdec, double* bulkvisCoefficients)

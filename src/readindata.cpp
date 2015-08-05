@@ -135,11 +135,9 @@ int read_FOdata::read_in_chemical_potentials(string /* path */, int FO_length, F
    for (int i = 0; i < Maxparticle; i++)
        particle_ptr[i].decays = 0; // to avoid infinite loop
    Nparticle = read_resonances_list(particle_ptr);
-   cout << "total number of particle species: " << Nparticle << endl;
 
    if(N_stableparticle > 0)
    {
-       cout << " -- EOS is partially chemical equilibrium " << endl;
        double** particle_mu = new double* [N_stableparticle];
        for(int i = 0; i < N_stableparticle; i++)
            particle_mu[i] = new double [FO_length];
@@ -156,7 +154,6 @@ int read_FOdata::read_in_chemical_potentials(string /* path */, int FO_length, F
    }
    else
    {
-      cout << " -- EOS is chemical equilibrium. " << endl;
       for(int i = 0; i < Nparticle; i++)
         for(int j = 0; j < FO_length; j++)
            surf_ptr[j].particle_mu[i] = 0.0e0;
@@ -499,7 +496,6 @@ int read_FOdata::read_resonances_list(particle_info* particle)
 {
    double eps = 1e-15;
    int Nparticle=0;
-   cout << " -- Read in particle resonance decay table...";
    ifstream resofile("tables/pdg_particles.dat");
    int local_i = 0;
    int dummy_int;
