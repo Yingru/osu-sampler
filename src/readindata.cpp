@@ -80,10 +80,12 @@ void read_FOdata::read_in_freeze_out_data(int length, FO_surf* surf_ptr)
    return;
 }
 
-int read_FOdata::read_in_chemical_potentials(string path, int FO_length, FO_surf* surf_ptr, particle_info* particle_ptr)
+int read_FOdata::read_in_chemical_potentials(string /* path */, int FO_length, FO_surf* surf_ptr, particle_info* particle_ptr)
 {
    int Nparticle = 0;
-   int N_stableparticle;
+   int N_stableparticle = 0;
+
+   /* disable partial chemical equilibrium
    Table mu_table;
    if(mode == 0)      // VISH2+1 output
    {
@@ -129,6 +131,7 @@ int read_FOdata::read_in_chemical_potentials(string path, int FO_length, FO_surf
        particletable >> N_stableparticle;
        particletable.close();
    }
+   */
 
    //read particle resonance decay table
    for (int i = 0; i < Maxparticle; i++)
