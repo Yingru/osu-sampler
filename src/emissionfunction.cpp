@@ -2522,6 +2522,11 @@ void EmissionFunctionArray::combine_samples_to_OSCAR()
             controls[m] >> number_of_particles[m];
             total_number_of_particles += number_of_particles[m];
         }
+
+        // skip oversamples that produced no particles
+        if (total_number_of_particles == 0)
+          continue;
+
         // sub-header for each event
         oscar << setw(10) << sample_idx << "  " << setw(10) << total_number_of_particles << "  " << setw(8) << 0.0 << "  " << setw(8) << 0.0 << endl;
 
