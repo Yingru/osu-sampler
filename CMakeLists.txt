@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(sampler CXX)
 
 # Find and use Boost.
-find_package(Boost REQUIRED)
+find_package(Boost 1.50 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # default build type: Release
