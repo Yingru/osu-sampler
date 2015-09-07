@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+
+
+def get_urqmd(pdg2ityp):
+    with open(pdg2ityp, 'r') as f:
+        idtab = False
+        for l in f:
+            if not idtab:
+                if l.strip() == 'data idtab/':
+                    idtab = True
+                continue
+
+            if l.startswith('c'):
+                continue
+
+            matches = re.findall(r'[ -][0-9]+', l)
+            if matches:
+                if len(matches) % 3 != 0:
+                    print('wtf:', *matches)
+                    sys.exit(1)
+                for ityp, twice_i3, pdgid in zip(*([map(int, matches)]*3)):
+                    yield pdgid
+                    # baryons and mesons with half-integer isospin (odd 2*i3)
+                    # have an implicit antiparticle
+                    if (ityp < 100) or (twice_i3 % 2 == 1):
+                        yield -pdgid
+
+            if l.endswith('/\n'):
+                break
+
+
+def get_pdg():
+    with open('pdg_particles.dat', 'r') as f:
+        for l in f:
+            fields = l.split()
+            if len(fields) == 12:
+                i = int(fields[0])
+                yield i
+                # add antibaryons
+                if int(fields[5]) == 1:
+                    yield -i
+
+
+def main():
+    try:
+        pdg2ityp = sys.argv[1]
+    except IndexError:
+        print('usage: {} /path/to/osc2u/pdg2ityp.f'.format(sys.argv[0]))
+        sys.exit(1)
+
+    urqmd = set(get_urqmd(pdg2ityp))
+    pdg = set(get_pdg())
+
+    particles = urqmd & pdg
+    particles.discard(22)  # no photons
+
+    print(*sorted(particles, key=abs), sep='\n')
+
+
+if __name__ == "__main__":
+    main()
